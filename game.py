@@ -22,7 +22,7 @@ CYAN = (0, 255, 255)
 STARTING_LENGTH = 3
 EMPTY = 0
 SNAKE = 1
-HEAD = 3
+HEAD = 2
 FOOD = 3
 BLOCK_SIZE = 32
 SPEED = 20  # for the pygame.Clock ticks
@@ -72,7 +72,7 @@ class Game():
         for node in self.snake:
             board[node[1]][node[0]] = SNAKE
 
-        board[self.food[1]][self.food[0]] == FOOD
+        board[self.food[1]][self.food[0]] = FOOD
         board[self.head[1]][self.head[0]] = HEAD
         return str(np.matrix(board))
 
