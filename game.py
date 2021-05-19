@@ -3,9 +3,9 @@ import random
 import numpy as np
 
 # Direction Constants
-UP = (0, 1)
+UP = (0, -1)
 RIGHT = (1, 0)
-DOWN = (0, -1)
+DOWN = (0, 1)
 LEFT = (-1, 0)
 
 # Color Constants
@@ -22,7 +22,8 @@ CYAN = (0, 255, 255)
 STARTING_LENGTH = 3
 EMPTY = 0
 SNAKE = 1
-FOOD = 2
+HEAD = 3
+FOOD = 3
 BLOCK_SIZE = 32
 SPEED = 20  # for the pygame.Clock ticks
 
@@ -72,7 +73,7 @@ class Game():
             board[node[1]][node[0]] = SNAKE
 
         board[self.food[1]][self.food[0]] == FOOD
-
+        board[self.head[1]][self.head[0]] = HEAD
         return str(np.matrix(board))
 
     def _place_food(self):
