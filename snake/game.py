@@ -1,7 +1,7 @@
 import pygame
 import random
 import numpy as np
-from snake.player import AbstractPlayer, HumanPlayer
+from snake.player import AbstractPlayer, ShortcutPlayerAI, HumanPlayer
 
 pygame.init()
 SCORE_FONT = pygame.font.SysFont('calibri', 25)
@@ -32,7 +32,7 @@ SNAKE = 1
 HEAD = 2
 FOOD = 3
 BLOCK_SIZE = 32
-FRAME_RATE = 9  # for the pygame.Clock ticks
+FRAME_RATE = 8  # for the pygame.Clock ticks
 
 
 class Game():
@@ -74,8 +74,10 @@ class Game():
         # to kill the if it haven't ate for a long time
 
     def play_game_step(self, player: AbstractPlayer):
+        self.iteration += 1
+        print(self.iteration)
         self._update_ui()
-        new_direction = player.action()
+        new_direction = player.action(self.snake, self.direction, self.size, self.food)
 
         # TODO: maybe avoid doing a turn of 180 degrees bcs the snake shouldn't be able doing that
         if new_direction != STAY:
@@ -111,7 +113,7 @@ class Game():
                 if [x, y] == self.head:
                     # TODO: maybe try add eyes to the snakes head
                     pygame.draw.rect(self.display, BLACK, pygame.Rect(x * 32, y * 32, 32, 32))
-                    pygame.draw.rect(self.display, BLUE, pygame.Rect(x * 32 + 1, y * 32 + 1, 31, 31))
+                    pygame.draw.rect(self.display, MAGENTA, pygame.Rect(x * 32 + 1, y * 32 + 1, 31, 31))
                     pygame.draw.rect(self.display, CYAN, pygame.Rect(x * 32 + 6, y * 32 + 6, 20, 20))
                 elif [x, y] in self.snake:
                     pygame.draw.rect(self.display, BLACK, pygame.Rect(x * 32, y * 32, 32, 32))
@@ -140,20 +142,6 @@ class Game():
 
     def _check_collision(self):
         x, y = self.head
-
-        # out_of_bound = not (0 <= x < self.size and 0 <= y < self.size)
-        # friendly_fire = (x, y in self.snake[-1])
-        #
-        # print(f'Head: {self.head}')
-        # print(f'X Y: {x, y}')
-        # print(f'Fool body: {self.snake}')
-        # print(f'Fool body without head: {self.snake[:-1]}')
-        #
-        # if out_of_bound:
-        #     print('Snake out of bounds')
-        # if friendly_fire:
-        #     print('Hey! Who turned on friendly fire?')
-
         return (not (0 <= x < self.size and 0 <= y < self.size)) or (list((x, y)) in self.snake[:-1])
 
     def __str__(self):
@@ -165,7 +153,7 @@ class Game():
 
 if __name__ == '__main__':
     snake: Game = Game()
-    player: HumanPlayer = HumanPlayer()
+    player: AbstractPlayer = ShortcutPlayerAI()
     print(snake)
     while 1:
         game_over, score = snake.play_game_step(player)
