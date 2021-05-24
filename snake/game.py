@@ -43,23 +43,10 @@ class Game():
         pygame.display.set_caption('Snake')
         self.clock = pygame.time.Clock()
 
-        # TODO: add recording mechanism - records the lengths instead of deleting nodes
-        # self._lengths = [STARTING_LENGTH]
-        # self.record = record
-
         # Game Settings
         self.direction = random.choice([UP, DOWN, LEFT, RIGHT])
-
-        # if self.direction == UP:
-        #     print('UP')
-        # elif self.direction == DOWN:
-        #     print('DOWN')
-        # elif self.direction == LEFT:
-        #     print('LEFT')
-        # elif self.direction == RIGHT:
-        #     print('RIGHT')
-
-        self.head = [random.randint(self.size // 4, 3* self.size//4), random.randint(self.size // 4, 3* self.size//4)]
+        self.head = [random.randint(self.size // 4, 3 * self.size // 4),
+                     random.randint(self.size // 4, 3 * self.size // 4)]
         self.snake = [self.head]
         for i in range(1, STARTING_LENGTH):
             shift_from_head = [e * i for e in self.direction]
@@ -70,16 +57,13 @@ class Game():
         self._place_food()
 
         self.score = 0
-        self.iteration = 0  # to keep count on the number of snake iterations:
-        # to kill the if it haven't ate for a long time
+        self.iteration = 0
 
     def play_game_step(self, player: AbstractPlayer):
         self.iteration += 1
-        print(self.iteration)
         self._update_ui()
         new_direction = player.action(self.snake, self.direction, self.size, self.food)
 
-        # TODO: maybe avoid doing a turn of 180 degrees bcs the snake shouldn't be able doing that
         if new_direction != STAY:
             if abs(COMPASS_ROSE.index(self.direction) - COMPASS_ROSE.index(new_direction)) != 2:
                 self.direction = new_direction
@@ -87,17 +71,9 @@ class Game():
         self.clock.tick(FRAME_RATE)
         game_over = self._check_collision()
 
-        return game_over, self.score
+        return self.iteration, game_over, self.score, self.snake.copy(), self.food
 
     # Helper functions
-    def _str_board(self):
-        board = [[0 for _ in range(self.size)] for __ in range(self.size)]
-        for node in self.snake:
-            board[node[1]][node[0]] = SNAKE
-
-        board[self.food[1]][self.food[0]] = FOOD
-        board[self.head[1]][self.head[0]] = HEAD
-        return str(np.matrix(board))
 
     def _place_food(self):
         x, y = random.randint(0, self.size - 1), random.randint(0, self.size - 1)
@@ -144,20 +120,20 @@ class Game():
         x, y = self.head
         return (not (0 <= x < self.size and 0 <= y < self.size)) or (list((x, y)) in self.snake[:-1])
 
+    # Strings
+
+    def _str_board(self):
+        board = [[0 for _ in range(self.size)] for __ in range(self.size)]
+        for node in self.snake:
+            board[node[1]][node[0]] = SNAKE
+
+        board[self.food[1]][self.food[0]] = FOOD
+        board[self.head[1]][self.head[0]] = HEAD
+        return str(np.matrix(board))
+
     def __str__(self):
         s_snake = f'SNAKE {self.snake}\n'
         s_food = f'FOOD {self.food}\n'
         s_board = f'BOARD:\n{self._str_board()}'
         return s_snake + s_food + s_board
 
-
-if __name__ == '__main__':
-    snake: Game = Game()
-    player: AbstractPlayer = ShortcutPlayerAI()
-    print(snake)
-    while 1:
-        game_over, score = snake.play_game_step(player)
-        if game_over:
-            print('GAME OVER')
-            print(f'Final Score: {score}')
-            break
