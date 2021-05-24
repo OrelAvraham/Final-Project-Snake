@@ -33,7 +33,7 @@ class Recorder:
 
 def main():
     snake_game: Game = Game()
-    player: AbstractPlayer = ShortcutPlayerAI()
+    player: AbstractPlayer = HumanPlayer()
     recorder: Recorder = None
     while 1:
         iteration, game_over, score, snake_body, food = snake_game.play_game_step(player)

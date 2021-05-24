@@ -83,6 +83,7 @@ class Game():
         self.food = [x, y]
 
     def _update_ui(self):
+
         self.display.fill(BLACK)
         for x in range(self.size):
             for y in range(self.size):
@@ -102,7 +103,6 @@ class Game():
                 else:
                     pygame.draw.rect(self.display, BLACK, pygame.Rect(x * 32, y * 32, 32, 32))
                     pygame.draw.rect(self.display, WHITE, pygame.Rect(x * 32 + 1, y * 32 + 1, 31, 31))
-
         score_text = SCORE_FONT.render("Score: " + str(self.score), True, BLACK)
         self.display.blit(score_text, [0, 0])
         pygame.display.flip()
