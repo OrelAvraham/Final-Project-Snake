@@ -15,9 +15,9 @@ class Recorder:
 
     def hard_save(self, name=None):
         if not name:
-            n = len(os.listdir('game_history'))
+            n = len(os.listdir('../game_viewer/game_history'))
             name = f'Game{n}'
-        path = f'game_history/{name}.snake'
+        path = f'../game_viewer/game_history/{name}.RAZ'
         while os.path.exists(path):
             name = input('Name already exists, enter another one:')
             path = f'{name}.snake'
@@ -33,7 +33,7 @@ class Recorder:
 
 def main():
     snake_game: Game = Game()
-    player: AbstractPlayer = HumanPlayer()
+    player: AbstractPlayer = ShortcutPlayerAI()
     recorder: Recorder = None
     while 1:
         iteration, game_over, score, snake_body, food = snake_game.play_game_step(player)
