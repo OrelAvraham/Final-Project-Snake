@@ -1,42 +1,30 @@
 import pygame
-
-# TODO: arrange the code in here a bit
+from snake.game_constants import *
 
 pygame.init()
-
-BLACK = (0, 0, 0)
-WHITE = (255, 255, 255)
-RED = (255, 0, 0)
-GREEN = (0, 255, 0)
-BLUE = (0, 0, 255)
-YELLOW = (255, 255, 0)
-MAGENTA = (255, 0, 255)
-CYAN = (0, 255, 255)
-
-BLOCK_SIZE = 32
-SIZE = 16
-SPEED = 8
+REWARD_FONR = pygame.font.SysFont('calibri', 25)  # font to print the reward on board
 
 
 def main():
     display = pygame.display.set_mode((SIZE * BLOCK_SIZE, SIZE * BLOCK_SIZE))
     pygame.display.set_caption('Snake')
-    clock = pygame.time.Clock()
 
-    path = 'game_history/Game2.RAZ'
+    # TODO: add file explorer gui
+    path = 'ai_shortcut_history/Game4.RAZ'
     with open(path, 'r') as f:
         lines = f.read().split('\n')
-        snake_history = eval(lines[0])
-        lengths = eval(lines[1])
-        foods = eval(lines[2])
-
-    turns = len(lengths)
+        snakes = eval(lines[0])
+        # lengths = eval(lines[1])
+        foods = eval(lines[1])
+        rewards = eval(lines[2])
+    turns = len(snakes)
     index = 0
-    curr_snake = snake_history[index: index + lengths[index]]
     show_direction = False
     direction_block = None
+
     while True:
-        draw(display, curr_snake, foods[index], direction_block)
+        # FIXME: after added the reward ot here it is anfry on me, maybe bcs of the reward printing on the board
+        draw(display, snakes[index], foods[index], rewards[index], direction_block)
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
@@ -54,14 +42,13 @@ def main():
                 elif event.key == pygame.K_SPACE:
                     show_direction = not show_direction
 
-        curr_snake = snake_history[index: index + lengths[index]]
         if show_direction and index < turns - 1:
-            direction_block = snake_history[index + lengths[index]]
+            direction_block = snakes[index + 1][-1]
         else:
             direction_block = None
 
 
-def draw(display, snake, food, direction_block):
+def draw(display, snake, food, reward, direction_block):
     display.fill(BLACK)
     for x in range(SIZE):
         for y in range(SIZE):
@@ -76,13 +63,17 @@ def draw(display, snake, food, direction_block):
             elif [x, y] == food:
                 pygame.draw.rect(display, BLACK, pygame.Rect(x * 32, y * 32, 32, 32))
                 pygame.draw.rect(display, RED, pygame.Rect(x * 32 + 1, y * 32 + 1, 31, 31))
-                pygame.draw.rect(display, GREEN, pygame.Rect(x * 32 + 13, y * 32 + 13, 6, 6))
+                pygame.draw.rect(display, GREEN, pygame.Rect(x * 32 + 11, y * 32 + 11, 10, 10))
             else:
                 pygame.draw.rect(display, BLACK, pygame.Rect(x * 32, y * 32, 32, 32))
                 pygame.draw.rect(display, WHITE, pygame.Rect(x * 32 + 1, y * 32 + 1, 31, 31))
             if direction_block:
                 if [x, y] == direction_block:
                     pygame.draw.circle(display, RED, (x * 32 + 16, y * 32 + 16), 4)
+
+            score_text = REWARD_FONR.render("Score: " + str(reward), True, BLACK)
+            display.blit(score_text, [0, 0])
+            pygame.display.flip()
 
     pygame.display.flip()
 

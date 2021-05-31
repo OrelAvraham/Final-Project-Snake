@@ -1,42 +1,15 @@
 import pygame
 import random
 import numpy as np
-from snake.player import AbstractPlayer, ShortcutPlayerAI, HumanPlayer
+from snake.players import AbstractPlayer, ShortcutPlayerAI, HumanPlayer
+from snake.game_constants import *
 
 pygame.init()
-SCORE_FONT = pygame.font.SysFont('calibri', 25)
-
-# Direction Constants
-UP = (0, -1)
-RIGHT = (1, 0)
-DOWN = (0, 1)
-LEFT = (-1, 0)
-STAY = (0, 0)
-
-COMPASS_ROSE = [UP, RIGHT, DOWN, LEFT]
-
-# Color Constants
-BLACK = (0, 0, 0)
-WHITE = (255, 255, 255)
-RED = (255, 0, 0)
-GREEN = (0, 255, 0)
-BLUE = (0, 0, 255)
-YELLOW = (255, 255, 0)
-MAGENTA = (255, 0, 255)
-CYAN = (0, 255, 255)
-
-# Game Constants
-STARTING_LENGTH = 3
-EMPTY = 0
-SNAKE = 1
-HEAD = 2
-FOOD = 3
-BLOCK_SIZE = 32
-FRAME_RATE = 8  # for the pygame.Clock ticks
+SCORE_FONT = pygame.font.SysFont('calibri', 25)  # font to print the score on board
 
 
-class Game():
-    def __init__(self, size=16):
+class Game:
+    def __init__(self, size=SIZE):
         # Technical settings
         self.size = size
         self.display = pygame.display.set_mode((size * BLOCK_SIZE, size * BLOCK_SIZE))
@@ -45,8 +18,8 @@ class Game():
 
         # Game Settings
         self.direction = random.choice([UP, DOWN, LEFT, RIGHT])
-        self.head = [random.randint(self.size // 4, 3 * self.size // 4),
-                     random.randint(self.size // 4, 3 * self.size // 4)]
+        self.head = [random.choice([self.size//2, self.size//2 - 1]),
+                     random.choice([self.size//2, self.size//2 - 1])]
         self.snake = [self.head]
         for i in range(1, STARTING_LENGTH):
             shift_from_head = [e * i for e in self.direction]
@@ -67,11 +40,17 @@ class Game():
         if new_direction != STAY:
             if abs(COMPASS_ROSE.index(self.direction) - COMPASS_ROSE.index(new_direction)) != 2:
                 self.direction = new_direction
-        self._move_snake()
+
+        reward = 0
+        if self._move_snake():
+            reward = 10
         self.clock.tick(FRAME_RATE)
         game_over = self._check_collision()
+        if game_over:
+            reward = -10
 
-        return self.iteration, game_over, self.score, self.snake.copy(), self.food
+        # TODO: maybe create game_data object
+        return self.iteration, game_over, self.score, self.snake.copy(), self.food, reward
 
     # Helper functions
 
@@ -99,7 +78,7 @@ class Game():
                 elif [x, y] == self.food:
                     pygame.draw.rect(self.display, BLACK, pygame.Rect(x * 32, y * 32, 32, 32))
                     pygame.draw.rect(self.display, RED, pygame.Rect(x * 32 + 1, y * 32 + 1, 31, 31))
-                    pygame.draw.rect(self.display, GREEN, pygame.Rect(x * 32 + 13, y * 32 + 13, 6, 6))
+                    pygame.draw.rect(self.display, GREEN, pygame.Rect(x * 32 + 11, y * 32 + 11, 10, 10))
                 else:
                     pygame.draw.rect(self.display, BLACK, pygame.Rect(x * 32, y * 32, 32, 32))
                     pygame.draw.rect(self.display, WHITE, pygame.Rect(x * 32 + 1, y * 32 + 1, 31, 31))
@@ -107,14 +86,17 @@ class Game():
         self.display.blit(score_text, [0, 0])
         pygame.display.flip()
 
-    def _move_snake(self):
+    def _move_snake(self):  # returns if the snake have eaten
         self.head = [a + b for a, b in zip(self.head, self.direction)]
         self.snake.append(self.head)
+
         if self.head == self.food:
             self.score += 1
             self._place_food()
-        else:
-            self.snake.pop(0)
+            return True
+
+        self.snake.pop(0)
+        return False
 
     def _check_collision(self):
         x, y = self.head
@@ -136,4 +118,3 @@ class Game():
         s_food = f'FOOD {self.food}\n'
         s_board = f'BOARD:\n{self._str_board()}'
         return s_snake + s_food + s_board
-
