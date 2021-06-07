@@ -1,20 +1,20 @@
 import pygame
 from abc import ABC
 import math
-from znake.game_constants import *
+from snake.game_constants import *
 import random
-from data_structures import *
+from utils.data_structures import *
 
 
 class AbstractPlayer(ABC):
-    # An abstract class that that represents a znake player
+    # An abstract class that that represents a snake player
     def action(self, snake, direction, food):
         """
-        A znake player action
+        A snake player action
         :param snake: a list represents the snakes body [tail, ..., head]
         :param direction: the current snakes direction, from the COMPASS_ROSE
         :param food: the place of the food on the board
-        :return: the direction the player decided the znake should move
+        :return: the direction the player decided the snake should move
         """
         ...
 
@@ -83,7 +83,7 @@ class ShortcutPlayerAI(AbstractPlayer):
         right_point = [a + b for a, b in zip(head, right)]
         points = []
 
-        # save the noes ones on the znake
+        # save the noes ones on the snake
 
         def _valid_point(p):
             return 0 <= p[0] < SIZE and 0 <= p[1] < SIZE and p not in snake
@@ -152,7 +152,7 @@ class BfsAI(AbstractPlayer):
             right_point = [a + b for a, b in zip(head, right)]
             points = []
 
-            # save the noes ones on the znake
+            # save the noes ones on the snake
 
             if self._valid_point(left_point, self.snake):
                 points.append(left_point)
@@ -170,7 +170,6 @@ class BfsAI(AbstractPlayer):
 
             if len(directions) == 0:
                 return STAY
-            print('directions', directions)
             return random.choice(directions)
             """END of attempt"""
 
@@ -261,7 +260,7 @@ class DfsAI(AbstractPlayer):
             right_point = [a + b for a, b in zip(head, right)]
             points = []
 
-            # save the noes ones on the znake
+            # save the noes ones on the snake
 
             if self._valid_point(left_point, self.snake):
                 points.append(left_point)
@@ -279,7 +278,6 @@ class DfsAI(AbstractPlayer):
 
             if len(directions) == 0:
                 return STAY
-            print('directions', directions)
             return random.choice(directions)
             """END of attempt"""
 
@@ -366,7 +364,7 @@ class AStarAI(AbstractPlayer):
             right_point = [a + b for a, b in zip(head, right)]
             points = []
 
-            # save the noes ones on the znake
+            # save the noes ones on the snake
 
             if self._valid_point(left_point, self.snake):
                 points.append(left_point)
@@ -384,7 +382,6 @@ class AStarAI(AbstractPlayer):
 
             if len(directions) == 0:
                 return STAY
-            print('directions', directions)
             return random.choice(directions)
             """END of attempt"""
 

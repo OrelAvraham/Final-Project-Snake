@@ -1,16 +1,17 @@
-import pygame
-from znake.game_constants import *
-import keyboard
+from snake.game_constants import *
 
 pygame.init()
-SCORE_FONT = pygame.font.SysFont('calibri', 25)  # font to print the score on board
 
-def main():
-    display = pygame.display.set_mode((SIZE * BLOCK_SIZE, SIZE * BLOCK_SIZE))
-    pygame.display.set_caption('Snake')
+
+def main(display=pygame.display.set_mode((SIZE * BLOCK_SIZE, SIZE * BLOCK_SIZE)), player_name=None, game_number=None):
+    pygame.display.set_caption('snake')
     clock = pygame.time.Clock()
     # TODO: add file explorer gui
-    path = 'ai_bfs_history/Game0.RAZ'
+    if player_name == None or game_number == None:
+        player_name = input('Enter agent name to view ')
+        game_number = input('Enter game number of the selected agent ')
+
+    path = f'{player_name}_history/Game{game_number}.RAZ'
     with open(path, 'r') as f:
         lines = f.read().split('\n')
         snakes = eval(lines[0])
@@ -36,11 +37,11 @@ def main():
                     pygame.quit()
                     quit()
                 elif event.key == pygame.K_RIGHT:
-                    if index < turns - 1:
-                        index += 1
+                    index += 1
+                    index %= turns
                 elif event.key == pygame.K_LEFT:
-                    if index > 0:
-                        index -= 1
+                    index -= 1
+                    index %= turns
                 elif event.key == pygame.K_SPACE:
                     show_direction = not show_direction
                 elif event.key == pygame.K_UP:
@@ -57,6 +58,8 @@ def main():
             direction_block = snakes[index + 1][-1]
         else:
             direction_block = None
+
+    print('DONE')
 
 
 def draw(display, snake, food, direction_block, path):
@@ -84,7 +87,7 @@ def draw(display, snake, food, direction_block, path):
                 if [x, y] == direction_block:
                     pygame.draw.circle(display, RED, (x * 32 + 16, y * 32 + 16), 4)
 
-    score_text = SCORE_FONT.render("Score: " + str(len(snake) - 3), True, BLACK)
+    score_text = FONT.render("Score: " + str(len(snake) - 3), True, BLACK)
     display.blit(score_text, [0, 0])
     pygame.display.flip()
     pygame.display.flip()

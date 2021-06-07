@@ -10,4 +10,4 @@ The main goal in the project is to train a model to play the snake game<br>
 ## The Game
 ![an example of a game after init][id]
 
-[id]: README/readme/game_start_example.png "Title"
+[id]: images/game_start_example.png "game start example"

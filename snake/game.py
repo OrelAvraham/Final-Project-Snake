@@ -1,20 +1,18 @@
-import pygame
 import random
 import numpy as np
-from znake.players import AbstractPlayer, ShortcutPlayerAI, HumanPlayer
-from znake.game_constants import *
+from snake.game_constants import *
 
 pygame.init()
-SCORE_FONT = pygame.font.SysFont('calibri', 25)  # font to print the score on board
 
 
 class Game:
-    def __init__(self, size=SIZE):
+    def __init__(self, display, size=SIZE, fps=NORMAL_FPS):
         # Technical settings
         self.size = size
-        self.display = pygame.display.set_mode((size * BLOCK_SIZE, size * BLOCK_SIZE))
-        pygame.display.set_caption('Snake')
+        self.display = display
+        pygame.display.set_caption('snake')
         self.clock = pygame.time.Clock()
+        self.fps = fps
 
         # Game Settings
         self.direction = random.choice([UP, DOWN, LEFT, RIGHT])
@@ -43,7 +41,7 @@ class Game:
                 self.direction = new_direction
 
         self._move_snake()
-        self.clock.tick(FRAME_RATE)
+        self.clock.tick(self.fps)
         game_over = self._check_collision()
 
         return self.game_state()
@@ -78,11 +76,11 @@ class Game:
                 else:
                     pygame.draw.rect(self.display, BLACK, pygame.Rect(x * 32, y * 32, 32, 32))
                     pygame.draw.rect(self.display, WHITE, pygame.Rect(x * 32 + 1, y * 32 + 1, 31, 31))
-        score_text = SCORE_FONT.render("Score: " + str(self.score), True, BLACK)
+        score_text = FONT.render("Score: " + str(self.score), True, BLACK)
         self.display.blit(score_text, [0, 0])
         pygame.display.flip()
 
-    def _move_snake(self):  # returns if the znake have eaten
+    def _move_snake(self):  # returns if the snake have eaten
         self.head = [a + b for a, b in zip(self.head, self.direction)]
         self.snake.append(self.head)
 
