@@ -18,6 +18,7 @@ def main(wanted_player: AbstractPlayer, display=pygame.display.set_mode((SIZE * 
 
     dir_name: str = str(player) + '_history'
     recorder: Recorder = Recorder(snake, food)
+
     while 1:
         action = player.action(snake, direction, food)
         game_over, score, snake, direction, food = snake_game.play_game_step(action)
@@ -25,6 +26,20 @@ def main(wanted_player: AbstractPlayer, display=pygame.display.set_mode((SIZE * 
 
         if game_over:
             break
+
+    image = pygame.image.load('images/game_over.png')
+    image = pygame.transform.scale(image, (SIZE * BLOCK_SIZE, SIZE * BLOCK_SIZE))
+    display.fill(WHITE)
+    display.blit(image, [0, 0])
+    pygame.display.flip()
+
+    keep_game_over_screen = True
+
+    while keep_game_over_screen:
+        for event in pygame.event.get():
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_SPACE:
+                    keep_game_over_screen = False
 
     recorder.hard_save(dir_name=dir_name)
 
