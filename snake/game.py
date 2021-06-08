@@ -1,5 +1,6 @@
 import random
 import numpy as np
+
 from snake.game_constants import *
 
 pygame.init()

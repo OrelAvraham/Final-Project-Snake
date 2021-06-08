@@ -1,6 +1,6 @@
-import pygame
 from abc import ABC
 import math
+
 from snake.game_constants import *
 import random
 from utils.data_structures import *

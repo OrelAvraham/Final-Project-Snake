@@ -1,18 +1,21 @@
-from snake.game_constants import *
+# Essential improts
 from snake.players import *
 from snake import play_game
 from game_viewer import game_viewer
 
-display = pygame.display.set_mode((SIZE * BLOCK_SIZE, SIZE * BLOCK_SIZE))
+display = pygame.display.set_mode((SIZE * BLOCK_SIZE, SIZE * BLOCK_SIZE))  # Defining the game display
 
+# loading the starting screen image
 image = pygame.image.load('images/starting_screen.png')
 image = pygame.transform.scale(image, (SIZE * BLOCK_SIZE, SIZE * BLOCK_SIZE))
-choosing_player = True
+
+# Initializing main loop flags
+choosing_player = True  # A
 view_game = False
 player: AbstractPlayer = None
 
 while True:
-    while choosing_player:
+    while choosing_player and not view_game:
         display.fill(WHITE)
         display.blit(image, [0, 0])
         pygame.display.flip()
@@ -60,15 +63,12 @@ while True:
         play_game.main(player, display)
         choosing_player = True
 
-    # FIXME: for some reason not working
     elif view_game:
-        print('START')
+        view_game = False
         game_viewer.main(display)
-        print('END')
 
     else:
         print('ERROR')
-
 
 if __name__ == '__main__':
     pass

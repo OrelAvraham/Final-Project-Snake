@@ -1,4 +1,5 @@
 import pygame
+
 pygame.init()
 # Direction Constants
 UP = (0, -1)

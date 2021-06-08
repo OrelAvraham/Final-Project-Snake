@@ -1,5 +1,5 @@
 from snake.game_constants import *
-
+import os
 pygame.init()
 
 
@@ -11,7 +11,7 @@ def main(display=pygame.display.set_mode((SIZE * BLOCK_SIZE, SIZE * BLOCK_SIZE))
         player_name = input('Enter agent name to view ')
         game_number = input('Enter game number of the selected agent ')
 
-    path = f'{player_name}_history/Game{game_number}.RAZ'
+    path = os.path.join(os.path.dirname(__file__), f'{player_name}_history/Game{game_number}.RAZ')
     with open(path, 'r') as f:
         lines = f.read().split('\n')
         snakes = eval(lines[0])
@@ -24,18 +24,18 @@ def main(display=pygame.display.set_mode((SIZE * BLOCK_SIZE, SIZE * BLOCK_SIZE))
     show_path = False
     path = []
 
-    while True:
+    run = True
+    while run:
         # FIXME: after added the reward ot here it is anfry on me, maybe bcs of the reward printing on the board
         draw(display, snakes[index], foods[index], direction_block, path)
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                pygame.quit()
-                quit()
-            elif event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_q:
                     pygame.quit()
                     quit()
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_q:
+                    run = False
                 elif event.key == pygame.K_RIGHT:
                     index += 1
                     index %= turns
